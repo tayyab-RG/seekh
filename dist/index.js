@@ -11,6 +11,10 @@ const port = process.env.PORT;
 app.get('/', (req, res) => {
     res.send('Express + TypeScript: Boiler Plate');
 });
+const user_1 = __importDefault(require("./routes/user"));
+app.use(express_1.default.urlencoded({ extended: false }));
+app.use(express_1.default.json());
+app.use('/', user_1.default);
 app.listen(port, () => {
     console.log(`⚡️[server]: Server is running at https://localhost:${port}`);
 });
