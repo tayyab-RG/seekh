@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 import { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
-import { getToken } from '../utilities/utilities';
+import { getToken } from '../utilities/getToken';
 import prisma from '../prisma';
 
 dotenv.config();
