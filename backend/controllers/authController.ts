@@ -72,3 +72,8 @@ export async function userLogin(req: Request, res: Response) {
 
     res.status(400).json("Invalid Credentials!");
 }
+
+export function userLogout(req: Request, res: Response) {
+    res.cookie('jwt_token', '', { httpOnly: true, maxAge: 1 });
+    res.status(200).json("User Logged out!");
+}

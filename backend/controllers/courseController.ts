@@ -99,3 +99,27 @@ export async function getCourse(req: Request, res: Response) {
     }
 
 }
+
+export async function updateCourse(req: Request, res: Response) {
+    const { id } = req.params;
+    if (!id) return res.status(401).json("Course Id is required!");
+
+    const { name } = req.body;
+    if (!name) return res.status(400).json("Course name is required!");
+
+    try {
+        const course = await prisma.course.update({
+            where: {
+                id: id
+            }, data: {
+                name: name
+            },
+            include: {
+                instructor: true
+            }
+        });
+        res.status(200).json({ courseName: course.name, instructorName: course.instructor.name });
+    } catch (error) {
+        console.log(error)
+    }
+}

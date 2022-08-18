@@ -34,7 +34,8 @@ export async function updateUser(req: Request, res: Response) {
             },
             data: {
                 name: name,
-                email: email
+                email: email,
+                password: password
             },
         })
         res.status(200).json({ success: true, data: updatedPerson });
