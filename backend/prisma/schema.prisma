@@ -11,12 +11,13 @@ datasource db {
 }
 
 model User {
-  id    String @id @default(uuid())
-  email String @unique
-  name  String
+  id       String @id @default(uuid())
+  email    String @unique
+  password String @default("password123")
+  name     String
 
   enrollments Enrollment[]
-  Course      Course[]
+  courses     Course[]
 }
 
 model Course {
@@ -26,7 +27,6 @@ model Course {
   instructor  User   @relation(fields: [instrutorId], references: [id])
 
   enrollments Enrollment[]
-  userId      String
 }
 
 model Enrollment {
