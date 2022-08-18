@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import userRoutes from './routes/userRoutes'
 import authRoutes from './routes/authRoutes'
 import courseRouter from './routes/courseRoutes'
+import enrollmentRoutes from './routes/enrollmentRoutes'
 
 dotenv.config();
 
@@ -19,6 +20,7 @@ app.use(express.json());
 app.use('/', userRoutes);
 app.use('/', authRoutes);
 app.use('/', courseRouter);
+app.use('/', enrollmentRoutes);
 
 app.listen(port, () => {
     console.log(`⚡️[server]: Server is running at https://localhost:${port}`);
