@@ -17,7 +17,7 @@ model User {
   name     String
 
   enrollments Enrollment[]
-  Course      Course[]
+  courses     Course[]
 }
 
 model Course {
@@ -27,7 +27,6 @@ model Course {
   instructor  User   @relation(fields: [instrutorId], references: [id])
 
   enrollments Enrollment[]
-  userId      String
 }
 
 model Enrollment {

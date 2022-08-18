@@ -7,6 +7,7 @@ import prisma from '../prisma';
 dotenv.config();
 
 export async function userSignup(req: Request, res: Response) {
+    console.log(req.body);
     let { name, email, password } = req.body;
 
     if (!name) return res.status(400).json({ success: false, msg: 'Name cannot be empty!' });

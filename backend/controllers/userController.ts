@@ -8,12 +8,11 @@ export async function getAllUsers(req: Request, res: Response) {
     try {
         const users = await prisma.user.findMany({
             select: {
+                id: true,
                 name: true,
                 email: true,
             }
         });
-        // console.log("Signed in User is : ");
-        // console.log(res.locals.signedInUser);
         res.status(200).json({ users });
     } catch (err) {
         res.status(500).json({ msg: "Something Went wrong!" });
