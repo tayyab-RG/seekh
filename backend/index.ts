@@ -1,17 +1,14 @@
 import express, { Express, Request, Response } from 'express';
-import dotenv from 'dotenv';
 import userRoutes from './routes/userRoutes'
 import authRoutes from './routes/authRoutes'
 import courseRouter from './routes/courseRoutes'
 import enrollmentRoutes from './routes/enrollmentRoutes'
 
-dotenv.config();
-
 const app: Express = express();
 const port = process.env.PORT;
 
 app.get('/', (req: Request, res: Response) => {
-    res.send('Express + TypeScript: Boiler Plate');
+    res.send('Express + TypeScript: CMS');
 });
 
 app.use(express.urlencoded({ extended: false }));

@@ -1,8 +1,5 @@
 import { Request, Response } from 'express';
-import dotenv from 'dotenv';
 import prisma from '../prisma';
-
-dotenv.config();
 
 export async function getAllUsers(req: Request, res: Response) {
     try {

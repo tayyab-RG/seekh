@@ -13,16 +13,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getUser = exports.updateUser = exports.getAllUsers = void 0;
-const client_1 = require("@prisma/client");
-const dotenv_1 = __importDefault(require("dotenv"));
-dotenv_1.default.config();
-const prisma = new client_1.PrismaClient();
+const prisma_1 = __importDefault(require("../prisma"));
 function getAllUsers(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            console.log("Reading users");
-            const users = yield prisma.user.findMany();
-            res.status(200).json({ data: users });
+            const users = yield prisma_1.default.user.findMany({
+                select: {
+                    id: true,
+                    name: true,
+                    email: true,
+                }
+            });
+            res.status(200).json({ users });
         }
         catch (err) {
             res.status(500).json({ msg: "Something Went wrong!" });
@@ -41,7 +43,7 @@ function updateUser(req, res) {
         if (!password)
             return res.status(400).json({ success: false, msg: 'Password cannot be empty!' });
         try {
-            let updatedPerson = yield prisma.user.update({
+            const updatedPerson = yield prisma_1.default.user.update({
                 where: {
                     id: id,
                 },
@@ -66,10 +68,14 @@ function getUser(req, res) {
         if (!id)
             res.status(400).json({ msg: "Id is required!" });
         try {
-            const user = yield prisma.user.findUnique({
+            const user = yield prisma_1.default.user.findUnique({
                 where: {
                     id: id,
                 },
+                select: {
+                    name: true,
+                    email: true
+                }
             });
             res.status(200).json({ data: user });
         }

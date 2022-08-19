@@ -1,10 +1,7 @@
 import jwt from "jsonwebtoken";
 import { Request, Response, NextFunction } from 'express';
-import dotenv from 'dotenv';
 import { cookieParser } from '../utilities/cookieParser';
 import prisma from '../prisma';
-
-dotenv.config();
 
 const verifyToken = async (req: Request, res: Response, next: NextFunction) => {
     const cookies = cookieParser(req.headers.cookie);
