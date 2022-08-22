@@ -1,6 +1,30 @@
 import { Request, Response } from 'express';
 import prisma from '../prisma';
 
+// TODO: for development only, testing purposes
+export async function getAllenrollments(req: Request, res: Response) {
+    try {
+        const enrollments = await prisma.enrollment.findMany({
+            include: {
+                user: true,
+                course: true
+            }
+        });
+        const fromattedEnrollments = enrollments.forEach((enrollment) => {
+            return {
+                userId: enrollment.userId,
+                userName: enrollment.user.name,
+
+
+            };
+        });
+        res.status(200).json({ enrollments });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json("Something Went Wrong!");
+    }
+}
+
 export async function enrollCourse(req: Request, res: Response) {
     const { id: courseId } = req.params;
 
@@ -136,4 +160,30 @@ export async function updateEnrollment(req: Request, res: Response) {
         console.log(error);
         res.status(500).json("Something Went Wrong!");
     }
+}
+
+export async function getEnrollmentsStatus(req: Request, res: Response) {
+    try {
+        const userEnrollments = await prisma.enrollment.findMany({
+            where: {
+                userId: res.locals.signedInUser.id
+            },
+            include: {
+                user: true,
+                course: true
+            }
+        })
+        const formattedEnrollments = userEnrollments.map((enrollment) => {
+            return {
+                status: enrollment.status,
+                instructor: enrollment.user.name,
+                course: enrollment.course.name
+            }
+        })
+        res.status(200).json({ enrollments: formattedEnrollments });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json("Something Went Wrong!");
+    }
+
 }

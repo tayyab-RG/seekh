@@ -31,7 +31,7 @@ model Course {
 
 model Enrollment {
   courseId String
-  course   Course @relation(fields: [courseId], references: [id])
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   userId   String
   user     User   @relation(fields: [userId], references: [id])
   status   String @default("PENDING")
