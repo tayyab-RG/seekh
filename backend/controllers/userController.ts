@@ -4,6 +4,7 @@ import prisma from '../prisma';
 
 dotenv.config();
 
+// TODO: for development only, testing purposes
 export async function getAllUsers(req: Request, res: Response) {
     try {
         const users = await prisma.user.findMany({
