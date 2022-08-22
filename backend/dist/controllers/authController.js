@@ -12,13 +12,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.userLogin = exports.userSignup = void 0;
-const dotenv_1 = __importDefault(require("dotenv"));
-const client_1 = require("@prisma/client");
+exports.userLogout = exports.userLogin = exports.userSignup = void 0;
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
-const utilities_1 = require("../utilities/utilities");
-dotenv_1.default.config();
-const prisma = new client_1.PrismaClient();
+const getToken_1 = require("../utilities/getToken");
+const prisma_1 = __importDefault(require("../prisma"));
 function userSignup(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         let { name, email, password } = req.body;
@@ -29,7 +26,7 @@ function userSignup(req, res) {
         if (!password)
             return res.status(400).json({ success: false, msg: 'Password cannot be empty!' });
         // Check if email already exists
-        const oldUser = yield prisma.user.findFirst({
+        const oldUser = yield prisma_1.default.user.findFirst({
             where: {
                 email: email,
             }
@@ -39,7 +36,7 @@ function userSignup(req, res) {
         }
         const encryptedPassword = yield bcryptjs_1.default.hash(password, 10);
         try {
-            const user = yield prisma.user.create({
+            const user = yield prisma_1.default.user.create({
                 data: {
                     name: name,
                     email: email,
@@ -49,15 +46,14 @@ function userSignup(req, res) {
                     id: true,
                     name: true,
                     email: true,
-                    password: true
                 }
             });
-            const token = (0, utilities_1.getToken)(user.id);
+            const token = (0, getToken_1.getToken)(user.id);
             res.cookie('jwt_token', token, { httpOnly: true, maxAge: 1000 * 3600 * 24 });
-            res.status(201).json({ success: true, msg: "User added.", data: user, token: token });
+            res.status(201).json({ data: user, token: token });
         }
         catch (error) {
-            res.status(500).json({ success: false, msg: 'Something went wrong!' });
+            res.status(500).json('Something went wrong!');
         }
     });
 }
@@ -69,20 +65,25 @@ function userLogin(req, res) {
             return res.status(400).json({ success: false, msg: 'Email cannot be empty!' });
         if (!password)
             return res.status(400).json({ success: false, msg: 'Password cannot be empty!' });
-        const user = yield prisma.user.findFirst({
+        const user = yield prisma_1.default.user.findFirst({
             where: {
                 email: email,
             }
         });
         if (!user)
-            res.status(404).json({ msg: "User with email does not exists!" });
+            return res.status(400).json("Invalid Credentials!");
         if (user && (yield bcryptjs_1.default.compare(password, user.password))) {
             // Create token
-            const token = (0, utilities_1.getToken)(user.id);
+            const token = (0, getToken_1.getToken)(user.id);
             res.cookie('jwt_token', token, { httpOnly: true, maxAge: 1000 * 3600 * 24 });
-            return res.status(200).json({ msg: "User Logged in Successfully!", data: user });
+            return res.status(200).json({ token: token, user_id: user.id });
         }
-        res.status(400).json({ msg: "Invalid Credentials!" });
+        res.status(400).json("Invalid Credentials!");
     });
 }
 exports.userLogin = userLogin;
+function userLogout(req, res) {
+    res.cookie('jwt_token', '', { httpOnly: true, maxAge: 1 });
+    res.status(200).json("User Logged out!");
+}
+exports.userLogout = userLogout;
