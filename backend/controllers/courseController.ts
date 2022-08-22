@@ -1,6 +1,16 @@
 import { Request, Response } from 'express';
 import prisma from '../prisma';
 
+// TODO: for development only, testing purposes
+export async function getAllCourses(req: Request, res: Response) {
+    const allCourses = await prisma.course.findMany({
+        include: {
+            instructor: true
+        }
+    });
+    res.status(200).json({ allCourses });
+}
+
 export async function createCourse(req: Request, res: Response) {
     let { name } = req.body;
 
@@ -25,19 +35,24 @@ export async function createCourse(req: Request, res: Response) {
     }
 }
 
-export async function getAllCourses(req: Request, res: Response) {
+export async function getUserCourses(req: Request, res: Response) {
     try {
         const courses = await prisma.course.findMany({
             where: {
                 instrutorId: res.locals.signedInUser.id
             },
-            select: {
-                id: true,
-                name: true,
-                instrutorId: true,
+            include: {
+                instructor: true,
             }
         });
-        res.status(200).json({ courses: courses });
+        const formattedCourses = courses.map((course) => {
+            return {
+                id: course.id,
+                name: course.name,
+                instructor: course.instructor.name
+            };
+        });
+        res.status(200).json({ courses: formattedCourses });
     } catch (error) {
         console.log(error);
         res.status(400).json("Something Went Wrong!");
