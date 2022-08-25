@@ -1,22 +1,44 @@
 import request from 'supertest';
 import app from '../app';
+// import prisma from '../prisma';
 
-describe('sample testing', () => {
-    test('tesitng request', async () => {
-        const res = await request(app).get('/users');
-        expect(res.body).toEqual({
-            "users": [
-                {
-                    "id": "7f6a3a5e-0207-4a73-80c4-fde3885136db",
-                    "name": "Peter Parker",
-                    "email": "spiderman@avengers.com"
-                },
-                {
-                    "id": "bbef4b12-553c-4ae6-bc4c-517909f0b350",
-                    "name": "Peter Parker",
-                    "email": "hulk@avengers.com"
-                }
-            ]
+describe('Testing User-Read-Update/Auth-Signup', () => {
+    let createdId: string;
+    test('Signup', async () => {
+        const res = await request(app)
+            .post('/signup')
+            .send({
+                name: 'Peter Parker',
+                email: "spiderman@avengers.com",
+                password: "Ploves@MJ3000"
+            })
+            .set('Accept', 'application/json');
+
+        createdId = res.body.data.id;
+        expect(res.body.data).toHaveProperty("id");
+    });
+
+    test('Read', async () => {
+        const res = await request(app).get(`/user/${createdId}`);
+        expect(res.body.data).toEqual({
+            "name": "Peter Parker",
+            "email": "spiderman@avengers.com"
         });
+    });
+
+    test('Update', async () => {
+        const data = {
+            name: 'New Peter Parker',
+            email: 'newspiderman@avengers.com',
+            password: 'NEWpassword@0000',
+            id: createdId
+        };
+        const res = await request(app)
+            .put(`/user/${createdId}`)
+            .send(data)
+            .set('Accept', 'application/json');
+
+        expect(res.body.success).toBeTruthy();
+        expect(res.body.data).toEqual(data)
     });
 })
