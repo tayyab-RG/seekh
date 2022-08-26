@@ -1,6 +1,18 @@
 import request from 'supertest';
 import app from '../app';
 
+
+const testUser = async () => {
+    const res = await request(app)
+        .post('/signup')
+        .send({
+            name: "new test user",
+            email: "newuser@test.com",
+            password: "NEWpassword@0000"
+        })
+        .set('Accept', 'application/json');
+}
+
 describe('Testing Auth-Login', () => {
     test('Incorrect email', async () => {
         const res = await request(app)
@@ -51,11 +63,14 @@ describe('Testing Auth-Login', () => {
     });
 
     test('valid credentials', async () => {
+        // making sure the user exists
+        await testUser();
+
         const res = await request(app)
             .post('/login')
             .send({
-                email: "spiderman@avengers.com",
-                password: "Ploves@MJ3000"
+                email: "newuser@test.com",
+                password: "NEWpassword@0000"
             })
             .set('Accept', 'application/json');
 

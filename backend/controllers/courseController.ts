@@ -104,6 +104,19 @@ export async function getCourse(req: Request, res: Response) {
 
         if (!course) return res.status(404).json("Course not Found!");
 
+        if (res.locals.signedInUser != course.instructor) {
+            // check if user is enrolled in this course
+            const enrollment = await prisma.enrollment.findFirst({
+                where: {
+                    userId: res.locals.signedInUser.id,
+                    courseId: id,
+                    status: "APPROVED"
+                }
+            });
+
+            if (!enrollment) return res.status(404).json("Unauthorized");
+        }
+
         res.status(200).json({
             courseName: course.name,
             instructorName: course.instructor.name
