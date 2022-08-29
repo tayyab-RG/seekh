@@ -4,8 +4,7 @@ import { Prisma } from '@prisma/client';
 const handleError = async (err: Prisma.PrismaClientKnownRequestError | string, req: Request, res: Response, next: NextFunction) => {
 
     if (typeof (err) === 'string') return res.status(401).json(err);
-    console.log("----------error middleware----------------");
-    console.log(err.code);
+
     let responseMsg;
     switch (err.code) {
         case 'P2002':

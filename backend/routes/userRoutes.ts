@@ -1,11 +1,10 @@
 import express from 'express';
 const router = express.Router();
-import { getAllUsers, updateUser, getUser } from '../controllers/userController'
+import { updateUser, getUser } from '../controllers/userController'
+import handleError from '../middlewares/errorMiddleware';
 
-router.get('/users', getAllUsers);
+router.get('/user/:id', getUser, handleError);
 
-router.get('/user/:id', getUser);
-
-router.put('/user/:id', updateUser);
+router.put('/user/:id', updateUser, handleError);
 
 export = router;
