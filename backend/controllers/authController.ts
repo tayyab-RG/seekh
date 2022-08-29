@@ -70,7 +70,7 @@ export async function userLogin(req: Request, res: Response) {
         // Create token
         const token = getToken(user.id);
         res.cookie('jwt_token', token, { httpOnly: true, maxAge: 1000 * 3600 * 24 });
-        return res.status(200).json({ token: token, user_id: user.id });
+        return res.status(200).json({ token: token, data: user });
     }
 
     res.status(400).json("Invalid Credentials!");

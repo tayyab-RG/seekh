@@ -1,34 +1,8 @@
-import { response } from 'express';
 import request from 'supertest'
 import app from '../app'
+import { ValidToken, otherUserToken } from '../utilities/tokenForTesting';
 
 let createdId: string;
-
-// to get a valid token
-const ValidToken = async () => {
-
-    let tokenRes = await request(app)
-        .post('/login')
-        .send({
-            email: "user@test.com",
-            password: "NEWpassword@0000"
-        })
-        .set('Accept', 'application/json');
-
-    if (tokenRes.statusCode != 200) {
-        tokenRes = await request(app)
-            .post('/signup')
-            .send({
-                name: "new test user",
-                email: "user@test.com",
-                password: "NEWpassword@0000"
-            })
-            .set('Accept', 'application/json');
-    }
-
-    const { header } = tokenRes;
-    return ([...header["set-cookie"]])
-}
 
 describe('Course Creation', () => {
     test('Request without token', async () => {
@@ -112,23 +86,9 @@ describe('get course data', () => {
     });
 
     test('course info by other user', async () => {
-        // create an other user and et the token
-        const signupRes = await request(app)
-            .post('/signup')
-            .send({
-                name: "other user",
-                email: "otheruser@test.com",
-                password: "NEWpassword@0000"
-            })
-            .set('Accept', 'application/json');
-
-        const { header } = signupRes;
-        const cookie = [...header["set-cookie"]];
-
-        console.log(createdId);
         const res = await request(app)
             .get(`/course/${createdId}`)
-            .set('Cookie', cookie);
+            .set('Cookie', await otherUserToken());
         expect(res.body).toEqual('Unauthorized');
     });
 });
@@ -176,21 +136,9 @@ describe('Deleting a course', () => {
     })
 
     test('Unauthorized delete', async () => {
-        // create an other user and et the token
-        const loginRes = await request(app)
-            .post('/login')
-            .send({
-                email: "otheruser@test.com",
-                password: "NEWpassword@0000"
-            })
-            .set('Accept', 'application/json');
-
-        const { header } = loginRes;
-        const cookie = [...header["set-cookie"]];
-
         const res = await request(app)
             .delete(`/course/${createdId}`)
-            .set('Cookie', cookie);
+            .set('Cookie', await otherUserToken());
 
         expect(res.body).toEqual('Unauthorized!');
     })

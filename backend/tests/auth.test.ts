@@ -75,6 +75,6 @@ describe('Testing Auth-Login', () => {
             .set('Accept', 'application/json');
 
         expect(res.body).toHaveProperty("token");
-        expect(res.body).toHaveProperty("user_id");
+        expect(res.body).toHaveProperty("data");
     });
 });
