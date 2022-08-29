@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import prisma from '../prisma';
 
 // TODO: for development only, testing purposes
@@ -11,10 +11,10 @@ export async function getAllCourses(req: Request, res: Response) {
     res.status(200).json({ allCourses });
 }
 
-export async function createCourse(req: Request, res: Response) {
+export async function createCourse(req: Request, res: Response, next: NextFunction) {
     let { name } = req.body;
 
-    if (!name) return res.status(401).json("Course Name Cannot be Empty!");
+    if (!name) return next("Course Name Cannot be Empty!");
 
     try {
         const course = await prisma.course.create({
@@ -30,12 +30,11 @@ export async function createCourse(req: Request, res: Response) {
         })
         res.status(201).json({ courseName: course.name, courseId: course.id, instructorId: course.instrutorId })
     } catch (error) {
-        console.log(error);
-        res.status(500).json('Something went wrong!')
+        next(error);
     }
 }
 
-export async function getUserCourses(req: Request, res: Response) {
+export async function getUserCourses(req: Request, res: Response, next: NextFunction) {
     try {
         const courses = await prisma.course.findMany({
             where: {
@@ -54,12 +53,11 @@ export async function getUserCourses(req: Request, res: Response) {
         });
         res.status(200).json({ courses: formattedCourses });
     } catch (error) {
-        console.log(error);
-        res.status(400).json("Something Went Wrong!");
+        next(error);
     }
 }
 
-export async function deleteCourse(req: Request, res: Response) {
+export async function deleteCourse(req: Request, res: Response, next: NextFunction) {
     const { id } = req.params;
 
     try {
@@ -71,7 +69,7 @@ export async function deleteCourse(req: Request, res: Response) {
                 ]
             }
         });
-        if (!userCourses || userCourses.length === 0) return res.status(401).json("Unauthorized!");
+        if (!userCourses || userCourses.length === 0) return next("Unauthorized!");
 
         const deletedCourse = await prisma.course.delete({
             where: {
@@ -80,15 +78,14 @@ export async function deleteCourse(req: Request, res: Response) {
         });
         res.status(200).json("Course Deleted!");
     } catch (error) {
-        console.log(error);
-        res.status(400).json("Something Went Wrong!");
+        next(error);
     }
 }
 
-export async function getCourse(req: Request, res: Response) {
+export async function getCourse(req: Request, res: Response, next: NextFunction) {
     const { id } = req.params;
 
-    if (!id) return res.status(401).json("Course Id is required!");
+    if (!id) return next("Course Id is required!");
 
     try {
         const course = await prisma.course.findFirst({
@@ -102,54 +99,27 @@ export async function getCourse(req: Request, res: Response) {
             }
         });
 
-        if (!course) return res.status(404).json("Course not Found!");
-
-        if (res.locals.signedInUser != course.instructor) {
-            // check if user is enrolled in this course
-            const enrollment = await prisma.enrollment.findFirst({
-                where: {
-                    userId: res.locals.signedInUser.id,
-                    courseId: id,
-                    status: "APPROVED"
-                }
-            });
-
-            if (!enrollment) return res.status(404).json("Unauthorized");
-        }
+        if (!course) return next("Course not Found!");
 
         res.status(200).json({
             courseName: course.name,
             instructorName: course.instructor.name
         });
     } catch (error) {
-        console.log(error);
-        res.status(500).json("something Went Wrong!");
+        next(error);
     }
 
 }
 
-export async function updateCourse(req: Request, res: Response) {
+export async function updateCourse(req: Request, res: Response, next: NextFunction) {
     const { id } = req.params;
-    if (!id) return res.status(401).json("Course Id is required!");
+    if (!id) return next("Course Id is required!");
 
     const { name } = req.body;
-    if (!name) return res.status(400).json("Course name is required!");
+    if (!name) return next("Course name is required!");
 
     try {
-        const course = await prisma.course.findFirst({
-            where: {
-                id: id
-            },
-            select: {
-                name: true,
-                instructor: true,
-                instrutorId: true
-            }
-        });
-
-        if (!course) return res.status(404).json("Course not Found!");
-
-        const updatedCourse = await prisma.course.update({
+        const course = await prisma.course.update({
             where: {
                 id: id
             }, data: {
@@ -159,9 +129,8 @@ export async function updateCourse(req: Request, res: Response) {
                 instructor: true
             }
         });
-        res.status(200).json({ courseName: updatedCourse.name, instructorName: updatedCourse.instructor.name });
+        res.status(200).json({ courseName: course.name, instructorName: course.instructor.name });
     } catch (error) {
-        console.log(error);
-        res.status(500).json("something Went Wrong!");
+        next(error)
     }
 }
