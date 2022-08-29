@@ -133,6 +133,41 @@ describe('get course data', () => {
     });
 });
 
+describe('Course Update', () => {
+    test('random id', async () => {
+        const res = await request(app)
+            .put('/course/dfdsfasdf')
+            .send({
+                name: "new name"
+            })
+            .set('Cookie', await ValidToken())
+            .set('Accept', 'application/json');
+
+        expect(res.body).toEqual('Course not Found!')
+    });
+
+    test('no data to update', async () => {
+        const res = await request(app)
+            .put(`/course/${createdId}`)
+            .set('Cookie', await ValidToken())
+            .set('Accept', 'application/json');
+
+        expect(res.body).toEqual('Course name is required!')
+    })
+
+    test('updated successfully', async () => {
+        const res = await request(app)
+            .put(`/course/${createdId}`)
+            .send({
+                name: "new name"
+            })
+            .set('Cookie', await ValidToken())
+            .set('Accept', 'application/json');
+
+        expect(res.body.courseName).toEqual('new name')
+    });
+});
+
 describe('Deleting a course', () => {
     test('Course Id check', async () => {
         const res = await request(app).delete(`/course/asdsadads`)
