@@ -8,7 +8,7 @@ const verifyToken = async (req: Request, res: Response, next: NextFunction) => {
     const token = cookies.jwt_token;
 
     if (!token)
-        return res.status(403).send("A token is required for authentication");
+        return res.status(403).json("A token is required for authentication");
 
     try {
         let decodedToken = jwt.verify(token, `${process.env.TOKEN_KEY}`);
@@ -26,7 +26,7 @@ const verifyToken = async (req: Request, res: Response, next: NextFunction) => {
         }
         throw new Error();
     } catch (err) {
-        return res.status(401).send("Invalid Token");
+        return res.status(401).json("Invalid Token");
     }
 };
 

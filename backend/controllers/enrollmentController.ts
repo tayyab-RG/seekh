@@ -104,7 +104,7 @@ export async function enrollmentRequests(req: Request, res: Response) {
                 status: enrollmentObj.status
             }
         });
-        res.status(200).json({ enrollemnts: fromattedEnrollments });
+        res.status(200).json({ enrollments: fromattedEnrollments });
     } catch (error) {
         console.log(error);
         res.status(500).json("Something Went Wrong!");
@@ -114,6 +114,7 @@ export async function enrollmentRequests(req: Request, res: Response) {
 export async function updateEnrollment(req: Request, res: Response) {
     const { user: userId, course: courseId, request: reqType } = req.params;
 
+    if (!['accept', 'reject'].includes(reqType)) return res.status(400).json("Invalid Request!");
     if (!userId) return res.status(400).json("User Id cannot be empty!");
     if (!courseId) return res.status(400).json("Course Id cannot be empty!");
 
@@ -140,8 +141,7 @@ export async function updateEnrollment(req: Request, res: Response) {
 
         let enrollmentStatus;
         if (reqType === "accept") enrollmentStatus = "ACCEPTED";
-        else if (reqType === "reject") enrollmentStatus = "REJECTED";
-        else return res.status(400).json("Invalid Request!");
+        else enrollmentStatus = "REJECTED";
 
         const enrollmentObj = await prisma.enrollment.update({
             where: {
@@ -154,7 +154,7 @@ export async function updateEnrollment(req: Request, res: Response) {
                 status: enrollmentStatus
             }
         });
-        let response = enrollmentObj.status === "APPROVED" ? "Enrollment request Approved." : "Enrollment request Rejected.";
+        let response = enrollmentObj.status === "ACCEPTED" ? "Enrollment request Approved." : "Enrollment request Rejected.";
         res.status(200).json(response);
     } catch (error) {
         console.log(error);

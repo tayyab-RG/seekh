@@ -104,6 +104,19 @@ export async function getCourse(req: Request, res: Response) {
 
         if (!course) return res.status(404).json("Course not Found!");
 
+        if (res.locals.signedInUser != course.instructor) {
+            // check if user is enrolled in this course
+            const enrollment = await prisma.enrollment.findFirst({
+                where: {
+                    userId: res.locals.signedInUser.id,
+                    courseId: id,
+                    status: "APPROVED"
+                }
+            });
+
+            if (!enrollment) return res.status(404).json("Unauthorized");
+        }
+
         res.status(200).json({
             courseName: course.name,
             instructorName: course.instructor.name
@@ -123,7 +136,20 @@ export async function updateCourse(req: Request, res: Response) {
     if (!name) return res.status(400).json("Course name is required!");
 
     try {
-        const course = await prisma.course.update({
+        const course = await prisma.course.findFirst({
+            where: {
+                id: id
+            },
+            select: {
+                name: true,
+                instructor: true,
+                instrutorId: true
+            }
+        });
+
+        if (!course) return res.status(404).json("Course not Found!");
+
+        const updatedCourse = await prisma.course.update({
             where: {
                 id: id
             }, data: {
@@ -133,8 +159,9 @@ export async function updateCourse(req: Request, res: Response) {
                 instructor: true
             }
         });
-        res.status(200).json({ courseName: course.name, instructorName: course.instructor.name });
+        res.status(200).json({ courseName: updatedCourse.name, instructorName: updatedCourse.instructor.name });
     } catch (error) {
-        console.log(error)
+        console.log(error);
+        res.status(500).json("something Went Wrong!");
     }
 }
