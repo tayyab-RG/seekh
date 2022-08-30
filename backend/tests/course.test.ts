@@ -1,6 +1,6 @@
 import request from 'supertest'
 import app from '../app'
-import { ValidToken, otherUserToken } from '../utilities/tokenForTesting';
+import { ValidToken, otherUserToken } from './utilities/tokenForTesting';
 
 let createdId: string;
 
@@ -103,7 +103,7 @@ describe('Course Update', () => {
             .set('Cookie', await ValidToken())
             .set('Accept', 'application/json');
 
-        expect(res.body).toEqual('Course not Found!')
+        expect(res.body).toEqual('An operation failed because it depends on one or more records that were required but not found. Record to update not found.')
     });
 
     test('no data to update', async () => {

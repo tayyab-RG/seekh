@@ -1,6 +1,6 @@
 import request from 'supertest'
 import app from '../app'
-import { ValidToken, otherUserToken } from '../utilities/tokenForTesting';
+import { ValidToken, otherUserToken } from './utilities/tokenForTesting';
 import jwt from "jsonwebtoken";
 import { cookieParser } from '../utilities/cookieParser';
 

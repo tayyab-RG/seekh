@@ -1,16 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import prisma from '../prisma';
 
-// TODO: for development only, testing purposes
-export async function getAllCourses(req: Request, res: Response) {
-    const allCourses = await prisma.course.findMany({
-        include: {
-            instructor: true
-        }
-    });
-    res.status(200).json({ allCourses });
-}
-
 export async function createCourse(req: Request, res: Response, next: NextFunction) {
     let { name } = req.body;
 
@@ -100,6 +90,19 @@ export async function getCourse(req: Request, res: Response, next: NextFunction)
         });
 
         if (!course) return next("Course not Found!");
+
+        if (res.locals.signedInUser != course.instructor) {
+            // check if user is enrolled in this course
+            const enrollment = await prisma.enrollment.findFirst({
+                where: {
+                    userId: res.locals.signedInUser.id,
+                    courseId: id,
+                    status: "ACCEPTED"
+                }
+            });
+
+            if (!enrollment) return res.status(404).json("Unauthorized");
+        }
 
         res.status(200).json({
             courseName: course.name,

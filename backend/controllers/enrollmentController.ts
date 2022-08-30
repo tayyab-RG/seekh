@@ -1,34 +1,10 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import prisma from '../prisma';
 
-// TODO: for development only, testing purposes
-export async function getAllenrollments(req: Request, res: Response) {
-    try {
-        const enrollments = await prisma.enrollment.findMany({
-            include: {
-                user: true,
-                course: true
-            }
-        });
-        const fromattedEnrollments = enrollments.forEach((enrollment) => {
-            return {
-                userId: enrollment.userId,
-                userName: enrollment.user.name,
-
-
-            };
-        });
-        res.status(200).json({ enrollments });
-    } catch (error) {
-        console.log(error);
-        res.status(500).json("Something Went Wrong!");
-    }
-}
-
-export async function enrollCourse(req: Request, res: Response) {
+export async function enrollCourse(req: Request, res: Response, next: NextFunction) {
     const { id: courseId } = req.params;
 
-    if (!courseId) return res.status(400).json("Course Id is required for enrollment!");
+    if (!courseId) return next("Course Id is required for enrollment!");
 
     const signedInUserId = res.locals.signedInUser.id;
     try {
@@ -41,13 +17,8 @@ export async function enrollCourse(req: Request, res: Response) {
             return res.status(400).json("Course Id is not valid!");
 
         if (course.instrutorId === signedInUserId)
-            return res.status(400).json("Cannot enroll in your own course.");
-    } catch (error) {
-        console.log(error);
-        res.status(500).json("Something Went Wrong!");
-    }
+            return next("Cannot enroll in your own course.");
 
-    try {
         const enrollment = await prisma.enrollment.create({
             data: {
                 user: {
@@ -64,12 +35,11 @@ export async function enrollCourse(req: Request, res: Response) {
         });
         res.status(200).json("Enrollment request sent!");
     } catch (error) {
-        console.log(error);
-        res.status(500).json("Something Went Wrong!");
+        next(error);
     }
 }
 
-export async function enrollmentRequests(req: Request, res: Response) {
+export async function enrollmentRequests(req: Request, res: Response, next: NextFunction) {
     const signedInUserId = res.locals.signedInUser.id;
 
     try {
@@ -106,17 +76,16 @@ export async function enrollmentRequests(req: Request, res: Response) {
         });
         res.status(200).json({ enrollments: fromattedEnrollments });
     } catch (error) {
-        console.log(error);
-        res.status(500).json("Something Went Wrong!");
+        next(error);
     }
 }
 
-export async function updateEnrollment(req: Request, res: Response) {
+export async function updateEnrollment(req: Request, res: Response, next: NextFunction) {
     const { user: userId, course: courseId, request: reqType } = req.params;
 
-    if (!['accept', 'reject'].includes(reqType)) return res.status(400).json("Invalid Request!");
-    if (!userId) return res.status(400).json("User Id cannot be empty!");
-    if (!courseId) return res.status(400).json("Course Id cannot be empty!");
+    if (!['accept', 'reject'].includes(reqType)) return next("Invalid Request!");
+    if (!userId) return next("User Id cannot be empty!");
+    if (!courseId) return next("Course Id cannot be empty!");
 
     const signedInUserId = res.locals.signedInUser.id;
     try {
@@ -126,7 +95,7 @@ export async function updateEnrollment(req: Request, res: Response) {
                 courseId: courseId
             }
         });
-        if (enrollment === null) return res.status(404).json("Enrollemnt Request with these parameters doesn't exists!");
+        if (enrollment === null) return next("Enrollemnt Request with these parameters doesn't exists!");
 
         const courseInstructor = await prisma.course.findFirst({
             where: {
@@ -137,7 +106,7 @@ export async function updateEnrollment(req: Request, res: Response) {
             }
         });
 
-        if (signedInUserId != courseInstructor?.instrutorId) return res.status(404).json("Unauthorized!");
+        if (signedInUserId != courseInstructor?.instrutorId) return next("Unauthorized!");
 
         let enrollmentStatus;
         if (reqType === "accept") enrollmentStatus = "ACCEPTED";
@@ -157,12 +126,11 @@ export async function updateEnrollment(req: Request, res: Response) {
         let response = enrollmentObj.status === "ACCEPTED" ? "Enrollment request Approved." : "Enrollment request Rejected.";
         res.status(200).json(response);
     } catch (error) {
-        console.log(error);
-        res.status(500).json("Something Went Wrong!");
+        next(error);
     }
 }
 
-export async function getEnrollmentsStatus(req: Request, res: Response) {
+export async function getEnrollmentsStatus(req: Request, res: Response, next: NextFunction) {
     try {
         const userEnrollments = await prisma.enrollment.findMany({
             where: {
@@ -182,8 +150,7 @@ export async function getEnrollmentsStatus(req: Request, res: Response) {
         })
         res.status(200).json({ enrollments: formattedEnrollments });
     } catch (error) {
-        console.log(error);
-        res.status(500).json("Something Went Wrong!");
+        next(error);
     }
 
 }

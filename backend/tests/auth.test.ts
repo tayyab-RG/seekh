@@ -47,7 +47,7 @@ describe('Testing Auth-Login', () => {
             })
             .set('Accept', 'application/json');
 
-        expect(res.body.msg).toEqual("Email cannot be empty!");
+        expect(res.body).toEqual("Email cannot be empty!");
     });
 
     test('empty password', async () => {
@@ -59,7 +59,7 @@ describe('Testing Auth-Login', () => {
             })
             .set('Accept', 'application/json');
 
-        expect(res.body.msg).toEqual("Password cannot be empty!");
+        expect(res.body).toEqual("Password cannot be empty!");
     });
 
     test('valid credentials', async () => {
