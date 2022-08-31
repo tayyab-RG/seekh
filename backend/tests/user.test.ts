@@ -31,7 +31,6 @@ describe('Testing User-Read-Update/Auth-Signup', () => {
             name: 'New Peter Parker',
             email: 'newspiderman@avengers.com',
             password: 'NEWpassword@0000',
-            id: createdId
         };
         const res = await request(app)
             .put(`/user/${createdId}`)
@@ -39,6 +38,6 @@ describe('Testing User-Read-Update/Auth-Signup', () => {
             .set('Accept', 'application/json');
 
         expect(res.body.success).toBeTruthy();
-        expect(res.body.data).toEqual(data)
+        expect(res.body.data).toEqual({ id: createdId, name: data.name, email: data.email });
     });
 })

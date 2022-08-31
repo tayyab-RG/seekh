@@ -23,7 +23,8 @@ describe('Testing Auth-Login', () => {
             })
             .set('Accept', 'application/json');
 
-        expect(res.body).toEqual("Invalid Credentials!");
+        expect(res.body.msg).toEqual("Invalid Credentials!");
+        expect(res.body.errorCode).toEqual(403);
     });
 
     test('Incorrect password', async () => {
@@ -35,7 +36,8 @@ describe('Testing Auth-Login', () => {
             })
             .set('Accept', 'application/json');
 
-        expect(res.body).toEqual("Invalid Credentials!");
+        expect(res.body.msg).toEqual("Invalid Credentials!");
+        expect(res.body.errorCode).toEqual(403);
     });
 
     test('empty email', async () => {
@@ -48,6 +50,7 @@ describe('Testing Auth-Login', () => {
             .set('Accept', 'application/json');
 
         expect(res.body.msg).toEqual("Email cannot be empty!");
+        expect(res.body.errorCode).toEqual(400);
     });
 
     test('empty password', async () => {
@@ -60,6 +63,7 @@ describe('Testing Auth-Login', () => {
             .set('Accept', 'application/json');
 
         expect(res.body.msg).toEqual("Password cannot be empty!");
+        expect(res.body.errorCode).toEqual(400);
     });
 
     test('valid credentials', async () => {

@@ -1,5 +1,5 @@
 import request from 'supertest'
-import app from '../app'
+import app from '../../app'
 
 export async function ValidToken() {
 
@@ -7,17 +7,17 @@ export async function ValidToken() {
         .post('/login')
         .send({
             email: "user@test.com",
-            password: "NEWpassword@0000"
+            password: "Password@0000"
         })
         .set('Accept', 'application/json');
 
-    if (tokenRes.statusCode != 200) {
+    if (!tokenRes.body.token) {
         tokenRes = await request(app)
             .post('/signup')
             .send({
-                name: "new test user",
+                name: "test user",
                 email: "user@test.com",
-                password: "NEWpassword@0000"
+                password: "Password@0000"
             })
             .set('Accept', 'application/json');
     }
@@ -31,21 +31,20 @@ export async function otherUserToken() {
         .post('/login')
         .send({
             email: "otheruser@test.com",
-            password: "NEWpassword@0000"
+            password: "Password@0000"
         })
         .set('Accept', 'application/json');
 
-    if (tokenRes.statusCode != 200) {
+    if (!tokenRes.body.token) {
         tokenRes = await request(app)
             .post('/signup')
             .send({
                 name: "other user",
                 email: "otheruser@test.com",
-                password: "NEWpassword@0000"
+                password: "Password@0000"
             })
             .set('Accept', 'application/json');
     }
-
 
     const { header } = tokenRes;
     return [...header["set-cookie"]];

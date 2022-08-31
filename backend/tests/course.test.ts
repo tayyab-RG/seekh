@@ -1,6 +1,6 @@
 import request from 'supertest'
 import app from '../app'
-import { ValidToken, otherUserToken } from '../utilities/tokenForTesting';
+import { ValidToken, otherUserToken } from './utilities/tokenForTesting';
 
 let createdId: string;
 
@@ -13,7 +13,8 @@ describe('Course Creation', () => {
             })
             .set('Accept', 'application/json');
 
-        expect(res.body).toEqual('A token is required for authentication');
+        expect(res.body.msg).toEqual('A token is required for authentication');
+        expect(res.body.errorCode).toEqual(403);
     });
 
     test('Request with invalid token', async () => {
@@ -25,7 +26,8 @@ describe('Course Creation', () => {
             .set('Accept', 'application/json')
             .set('Cookie', ['jwt_token=randomString; Max-Age=86400; Path=/; Expires=Sat, 27 Aug 2030 05:26:11 GMT; HttpOnly']);
 
-        expect(res.body).toEqual('Invalid Token');
+        expect(res.body.msg).toEqual('Invalid Token');
+        expect(res.body.errorCode).toEqual(401);
     });
 
     test('empty name', async () => {
@@ -37,7 +39,8 @@ describe('Course Creation', () => {
             .set('Accept', 'application/json')
             .set('Cookie', await ValidToken());
 
-        expect(res.body).toEqual('Course Name Cannot be Empty!');
+        expect(res.body.msg).toEqual('Course Name Cannot be Empty!');
+        expect(res.body.errorCode).toEqual(400);
     });
 
     test('valid name and token', async () => {
@@ -57,7 +60,8 @@ describe('Course Creation', () => {
 describe('Listing courses you are teaching', () => {
     test('Request without token', async () => {
         const res = await request(app).get('/courses');
-        expect(res.body).toEqual('A token is required for authentication');
+        expect(res.body.msg).toEqual('A token is required for authentication');
+        expect(res.body.errorCode).toEqual(403);
     });
 
     test('Request with invalid token', async () => {
@@ -65,7 +69,8 @@ describe('Listing courses you are teaching', () => {
             .get('/courses')
             .set('Cookie', ['jwt_token=randomString; Max-Age=86400; Path=/; Expires=Sat, 27 Aug 2030 05:26:11 GMT; HttpOnly']);
 
-        expect(res.body).toEqual('Invalid Token');
+        expect(res.body.msg).toEqual('Invalid Token');
+        expect(res.body.errorCode).toEqual(401);
     });
 
     test('with valid token', async () => {
@@ -82,7 +87,8 @@ describe('get course data', () => {
             .get('/course/sdfsdf')
             .set('Cookie', await ValidToken());
 
-        expect(res.body).toEqual('Course not Found!');
+        expect(res.body.msg).toEqual('Course not Found!');
+        expect(res.body.errorCode).toEqual(404);
     });
 
     test('course info by other user', async () => {
@@ -103,7 +109,8 @@ describe('Course Update', () => {
             .set('Cookie', await ValidToken())
             .set('Accept', 'application/json');
 
-        expect(res.body).toEqual('Course not Found!')
+        expect(res.body.msg).toEqual('Record Not found!');
+        expect(res.body.errorCode).toEqual(404);
     });
 
     test('no data to update', async () => {
@@ -112,7 +119,8 @@ describe('Course Update', () => {
             .set('Cookie', await ValidToken())
             .set('Accept', 'application/json');
 
-        expect(res.body).toEqual('Course name is required!')
+        expect(res.body.msg).toEqual('Course name is required!');
+        expect(res.body.errorCode).toEqual(400);
     })
 
     test('updated successfully', async () => {
@@ -130,9 +138,12 @@ describe('Course Update', () => {
 
 describe('Deleting a course', () => {
     test('Course Id check', async () => {
-        const res = await request(app).delete(`/course/asdsadads`)
-            .set('Cookie', await ValidToken());;
-        expect(res.body).toEqual("Unauthorized!");
+        const res = await request(app)
+            .delete(`/course/asdsadads`)
+            .set('Cookie', await ValidToken());
+
+        expect(res.body.msg).toEqual('Unauthorized!');
+        expect(res.body.errorCode).toEqual(401);
     })
 
     test('Unauthorized delete', async () => {
@@ -140,7 +151,8 @@ describe('Deleting a course', () => {
             .delete(`/course/${createdId}`)
             .set('Cookie', await otherUserToken());
 
-        expect(res.body).toEqual('Unauthorized!');
+        expect(res.body.msg).toEqual('Unauthorized!');
+        expect(res.body.errorCode).toEqual(401);
     })
 
     test('course deleted by creator', async () => {

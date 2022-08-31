@@ -1,29 +1,16 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import prisma from '../prisma';
 
-// TODO: for development only, testing purposes
-export async function getAllUsers(req: Request, res: Response) {
-    try {
-        const users = await prisma.user.findMany({
-            select: {
-                id: true,
-                name: true,
-                email: true,
-            }
-        });
-        res.status(200).json({ users });
-    } catch (err) {
-        res.status(500).json({ msg: "Something Went wrong!" });
-    }
-}
-
-export async function updateUser(req: Request, res: Response) {
+export async function updateUser(req: Request, res: Response, next: NextFunction) {
     const { id } = req.params;
     const { name, email, password } = req.body;
 
-    if (!name) return res.status(400).json({ success: false, msg: 'Name cannot be empty!' });
-    if (!email) return res.status(400).json({ success: false, msg: 'Email cannot be empty!' });
-    if (!password) return res.status(400).json({ success: false, msg: 'Password cannot be empty!' });
+    // check email format
+    if (!/^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$/.test(email)) return next("Provide Valid email");
+
+    // check password requirements
+    // Minimum eight and maximum 16 characters, at least one uppercase letter, one lowercase letter, one number and one special character:
+    if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,16}$/.test(password)) return next("Password not meet the requirements!");
 
     try {
         const updatedPerson = await prisma.user.update({
@@ -35,18 +22,22 @@ export async function updateUser(req: Request, res: Response) {
                 email: email,
                 password: password
             },
+            select: {
+                id: true,
+                name: true,
+                email: true
+            }
         })
         res.status(200).json({ success: true, data: updatedPerson });
     } catch (error) {
-        console.log(error);
-        res.status(500).json({ success: false, msg: 'Something went wrong!' })
+        next(error);
     }
 }
 
-export async function getUser(req: Request, res: Response) {
+export async function getUser(req: Request, res: Response, next: NextFunction) {
     const { id } = req.params;
 
-    if (!id) res.status(400).json({ msg: "Id is required!" });
+    if (!id) next('User Id is required!');
 
     try {
         const user = await prisma.user.findUnique({
@@ -60,7 +51,6 @@ export async function getUser(req: Request, res: Response) {
         });
         res.status(200).json({ data: user });
     } catch (error) {
-        console.log(error);
-        res.status(404).json({ msg: "User with given Id not found!" });
+        next(error);
     }
 }
