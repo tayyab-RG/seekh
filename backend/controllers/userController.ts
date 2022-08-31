@@ -37,7 +37,7 @@ export async function updateUser(req: Request, res: Response, next: NextFunction
 export async function getUser(req: Request, res: Response, next: NextFunction) {
     const { id } = req.params;
 
-    if (!id) next('Id is required!');
+    if (!id) next('User Id is required!');
 
     try {
         const user = await prisma.user.findUnique({

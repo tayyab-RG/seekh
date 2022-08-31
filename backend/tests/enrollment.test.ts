@@ -32,7 +32,8 @@ describe('enroll course', () => {
             .post(`/enroll/${createdId}`)
             .set('Cookie', await ValidToken());
 
-        expect(res.body).toEqual('Cannot enroll in your own course.');
+        expect(res.body.msg).toEqual('Cannot enroll in your own course.');
+        expect(res.body.errorCode).toEqual(403);
     });
 
     test('Enroll with different users', async () => {
@@ -60,7 +61,8 @@ describe('Accept/Reject enrollment request', () => {
             .post('/random/courseid/userid')
             .set('Cookie', await ValidToken());
 
-        expect(res.body).toEqual('Invalid Request!');
+        expect(res.body.msg).toEqual('Invalid Request!');
+        expect(res.body.errorCode).toEqual(405);;
     });
 
     test('random user and course ids', async () => {
@@ -68,7 +70,8 @@ describe('Accept/Reject enrollment request', () => {
             .post('/accept/courseid/userid')
             .set('Cookie', await ValidToken());
 
-        expect(res.body).toEqual("Enrollemnt Request with these parameters doesn't exists!");
+        expect(res.body.msg).toEqual("Enrollemnt not Found!");
+        expect(res.body.errorCode).toEqual(404);
     });
 
     test('Authorization', async () => {
@@ -82,7 +85,8 @@ describe('Accept/Reject enrollment request', () => {
             .post(`/accept/${createdId}/${userId}`)
             .set('Cookie', otherUserT);
 
-        expect(res.body).toEqual('Unauthorized!');
+        expect(res.body.msg).toEqual('Unauthorized!');
+        expect(res.body.errorCode).toEqual(401);
     });
 
     test('Rejection', async () => {

@@ -4,7 +4,7 @@ import prisma from '../prisma';
 export async function enrollCourse(req: Request, res: Response, next: NextFunction) {
     const { id: courseId } = req.params;
 
-    if (!courseId) return next("Course Id is required for enrollment!");
+    if (!courseId) return next("Course Id is required!");
 
     const signedInUserId = res.locals.signedInUser.id;
     try {
@@ -95,7 +95,7 @@ export async function updateEnrollment(req: Request, res: Response, next: NextFu
                 courseId: courseId
             }
         });
-        if (enrollment === null) return next("Enrollemnt Request with these parameters doesn't exists!");
+        if (enrollment === null) return next("Enrollemnt not Found!");
 
         const courseInstructor = await prisma.course.findFirst({
             where: {
