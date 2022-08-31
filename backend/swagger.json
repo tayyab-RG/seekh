@@ -1,0 +1,174 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "SEEKH",
+    "description": "This is a sample Course Managment Server based on the OpenAPI 3.0 specification.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:5000"
+    }
+  ],
+  "tags": [
+    {
+      "name": "auth",
+      "description": "login nad signup"
+    },
+    {
+      "name": "user",
+      "description": "manage users data"
+    },
+    {
+      "name": "course",
+      "description": "manage course data"
+    },
+    {
+      "name": "enrollment",
+      "description": "manage enrollment data"
+    }
+  ],
+  "paths": {
+    "/login": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "get user token",
+        "description": "send email password and get token",
+        "operationId": "login",
+        "requestBody": {
+          "description": "send email password and get token",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Login"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginSignupResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": []
+      }
+    },
+    "/signup": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "create user and get user token",
+        "description": "send name, email and password and get token",
+        "operationId": "signup",
+        "requestBody": {
+          "description": "send name, email and password and get token",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Signup"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginSignupResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": []
+      }
+    },
+    "/logout": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "logs out the current user",
+        "description": "cleans up the token",
+        "operationId": "logout",
+        "responses": {
+          "200": {
+            "description": "User Logged out!"
+          }
+        },
+        "security": []
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Login": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "required": true
+          },
+          "password": {
+            "type": "string",
+            "required": true
+          }
+        }
+      },
+      "Signup": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "required": true
+          },
+          "email": {
+            "type": "string",
+            "required": true
+          },
+          "password": {
+            "type": "string",
+            "required": true
+          }
+        }
+      },
+      "LoginSignupResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              }
+            }
+          },
+          "token": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "api_key": {
+        "type": "apiKey",
+        "name": "api_key",
+        "in": "header"
+      }
+    }
+  }
+}
