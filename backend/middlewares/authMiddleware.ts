@@ -4,11 +4,16 @@ import { cookieParser } from '../utilities/cookieParser';
 import prisma from '../prisma';
 
 const verifyToken = async (req: Request, res: Response, next: NextFunction) => {
-    const cookies = cookieParser(req.headers.cookie);
-    const token = cookies.jwt_token;
+    let token;
+    if (typeof (req.headers.jwt_token) == 'string' && req.headers.jwt_token) {
+        token = req.headers.jwt_token
+    } else {
+        const cookies = cookieParser(req.headers.cookie);
+        token = cookies.jwt_token;
+    }
 
     if (!token)
-        return res.json({ errorCode: 403, msg: "A token is required for authentication" });
+        return res.status(403).json({ errorCode: 403, msg: "A token is required for authentication" });
 
     try {
         let decodedToken = jwt.verify(token, `${process.env.TOKEN_KEY}`);
@@ -26,7 +31,7 @@ const verifyToken = async (req: Request, res: Response, next: NextFunction) => {
         }
         throw new Error();
     } catch (err) {
-        return res.json({ errorCode: 401, msg: "Invalid Token" });
+        return res.status(401).json({ errorCode: 401, msg: "Invalid Token" });
     }
 };
 

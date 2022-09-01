@@ -32,7 +32,7 @@ const handleError = async (err: Prisma.PrismaClientKnownRequestError | string, r
                 err = "Something went Wrong!"
                 break;
         }
-        return res.json({
+        return res.status(errorCode).json({
             errorCode: errorCode,
             msg: err
         });
@@ -52,7 +52,7 @@ const handleError = async (err: Prisma.PrismaClientKnownRequestError | string, r
             errorCode = 500;
             break;
     }
-    return res.json({
+    return res.status(errorCode).json({
         errorCode: errorCode,
         msg: responseMsg
     });
