@@ -191,6 +191,409 @@
           }
         ]
       }
+    },
+    "/course/create": {
+      "post": {
+        "tags": [
+          "course"
+        ],
+        "summary": "created a new course",
+        "description": "create course and set current user as instructor",
+        "operationId": "createCourse",
+        "requestBody": {
+          "description": "create course and set current user as instructor",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "required": true
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CourseResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/courses": {
+      "get": {
+        "tags": [
+          "course"
+        ],
+        "summary": "List user courses",
+        "description": "List all courses where current user is the instructor",
+        "operationId": "listCourses",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "courses": {
+                      "type": "array",
+                      "description": "list of courses",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "instructor": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "example": {
+                    "courses": [
+                      {
+                        "id": "9cdb2ecf-a8c4-4ccc-ab29-830befd5ef52",
+                        "name": "New Course",
+                        "instructor": "name"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/course/{id}": {
+      "get": {
+        "tags": [
+          "course"
+        ],
+        "summary": "Get course info",
+        "description": "Get course info if user is the instructor or user is enrolled",
+        "operationId": "getCourse",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CourseResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "course"
+        ],
+        "summary": "Update course info",
+        "description": "Get course info if user is the instructor or user is enrolled",
+        "operationId": "getCourse",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "requestBody": {
+          "description": "Update course name",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "required": true
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CourseResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "course"
+        ],
+        "summary": "Get course info",
+        "description": "Get course info if user is the instructor or user is enrolled",
+        "operationId": "getCourse",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Course Deleted!"
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/enroll/{id}": {
+      "post": {
+        "tags": [
+          "enrollment"
+        ],
+        "summary": "Enroll into a course",
+        "description": "Enroll current user to given couse id",
+        "operationId": "enrollCourse",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Enrollment request sent!"
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/requests": {
+      "get": {
+        "tags": [
+          "enrollment"
+        ],
+        "summary": "List enrollment requests",
+        "description": "List all requests sent to your courses",
+        "operationId": "listRequests",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "enrollments": {
+                      "type": "array",
+                      "description": "list of requests",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "userName": {
+                            "type": "string"
+                          },
+                          "userId": {
+                            "type": "string"
+                          },
+                          "courseName": {
+                            "type": "string"
+                          },
+                          "courseId": {
+                            "type": "string"
+                          },
+                          "status": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "example": {
+                    "enrollments": [
+                      {
+                        "userName": "new user",
+                        "userId": "2d8836d0-53cb-4823-8d30-92d850da37a7",
+                        "courseName": "New Course",
+                        "courseId": "9cdb2ecf-a8c4-4ccc-ab29-830befd5ef52",
+                        "status": "PENDING"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/{request}/{courseId}/{userId}": {
+      "post": {
+        "tags": [
+          "enrollment"
+        ],
+        "summary": "Accept or Reject an enrollment request",
+        "description": "Accept or Reject an enrollment request",
+        "operationId": "request",
+        "parameters": [
+          {
+            "name": "request",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "enum": [
+              "accept",
+              "reject"
+            ]
+          },
+          {
+            "name": "courseId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Enrollment request Approved OR Enrollment request Rejected."
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/enrollments": {
+      "get": {
+        "tags": [
+          "enrollment"
+        ],
+        "summary": "List enrollment Statuses for a user (student)",
+        "description": "List enrollment Statuses for a user (student)",
+        "operationId": "listEnrollments",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "enrollments": {
+                      "type": "array",
+                      "description": "list of enrollments",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "course": {
+                            "type": "string"
+                          },
+                          "instructor": {
+                            "type": "string"
+                          },
+                          "status": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "example": {
+                    "enrollments": [
+                      {
+                        "instructor": "new user",
+                        "course": "New Course",
+                        "status": "PENDING"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -270,6 +673,31 @@
             "type": "string"
           },
           "password": {
+            "type": "string"
+          }
+        }
+      },
+      "CourseCreateResponse": {
+        "type": "object",
+        "properties": {
+          "courseName": {
+            "type": "string"
+          },
+          "courseId": {
+            "type": "string"
+          },
+          "instructorId": {
+            "type": "string"
+          }
+        }
+      },
+      "CourseResponse": {
+        "type": "object",
+        "properties": {
+          "courseName": {
+            "type": "string"
+          },
+          "instructorName": {
             "type": "string"
           }
         }

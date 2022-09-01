@@ -91,7 +91,7 @@ export async function getCourse(req: Request, res: Response, next: NextFunction)
 
         if (!course) return next("Course not Found!");
 
-        if (res.locals.signedInUser != course.instructor) {
+        if (res.locals.signedInUser.id != course.instrutorId) {
             // check if user is enrolled in this course
             const enrollment = await prisma.enrollment.findFirst({
                 where: {
@@ -101,7 +101,7 @@ export async function getCourse(req: Request, res: Response, next: NextFunction)
                 }
             });
 
-            if (!enrollment) return res.status(404).json("Unauthorized");
+            if (!enrollment) return next("Unauthorized");
         }
 
         res.status(200).json({

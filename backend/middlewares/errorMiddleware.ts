@@ -41,8 +41,9 @@ const handleError = async (err: Prisma.PrismaClientKnownRequestError | string, r
     let responseMsg;
     switch (err.code) {
         case 'P2002':
-            responseMsg = `${err.message.split('\n')[8].trim().split(' ')[-1]} already exists. Please try another one.`;
+            responseMsg = `${err.message.split('\n')[8].trim().split(' ')[6]} already exists. Please try another one.`;
             errorCode = 403;
+            break;
         case 'P2025':
             responseMsg = 'Record Not found!';
             errorCode = 404;
