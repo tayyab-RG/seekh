@@ -1,5 +1,21 @@
-import Auth from './src/auth'
+import Controller from './src/controller';
 
-Auth.login({ email: 'user4@email.com', password: 'Password@123' });
+const controller = new Controller();
 
-export default { Auth };
+controller.getAuth().login({ email: 'user4@email.com', password: 'Password@123' })
+    .then((res) => {
+        console.log(res);
+    })
+    .catch((err) => {
+        console.log(err)
+    });
+
+controller.getAuth().signup({ email: 'user4@email.com', password: 'Password@123', name: 'user4' })
+    .then((res) => {
+        console.log(res);
+    })
+    .catch((err) => {
+        console.log(err)
+    });
+
+export default Controller;

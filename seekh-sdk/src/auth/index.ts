@@ -1,31 +1,21 @@
-import axios from 'axios';
-import { login, signup } from './types';
-
-const api = axios.create({ baseURL: 'http://localhost:5000' })
+import { login, signup, AuthResponse } from './types';
+import { generateRequest } from '../transportLayer';
 
 class Auth {
-    static login(loginCredentials: login) {
-        return new Promise((resolve, reject) => {
-            api.post('/login', loginCredentials)
-                .then(res => {
-                    resolve(res.data)
-                })
-                .catch(error => {
-                    reject(error)
-                });
-        });
+    async login(loginCredentials: login): Promise<AuthResponse> {
+        try {
+            return await generateRequest({ type: 'post', url: '/login', body: loginCredentials });
+        } catch (error) {
+            throw error
+        }
     }
 
-    static signup(signupCredentials: signup) {
-        return new Promise((resolve, reject) => {
-            api.post('/signup', signupCredentials)
-                .then(res => {
-                    resolve(res.data)
-                })
-                .catch(error => {
-                    reject(error);
-                });
-        });
+    async signup(signupCredentials: signup): Promise<AuthResponse> {
+        try {
+            return await generateRequest({ type: 'post', url: '/signup', body: signupCredentials });
+        } catch (error) {
+            throw error
+        }
     }
 }
 

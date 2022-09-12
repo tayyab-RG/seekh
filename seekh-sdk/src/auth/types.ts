@@ -8,3 +8,10 @@ export interface signup {
     email: string,
     password: string
 }
+
+export interface AuthResponse {
+    token: string,
+    data: {
+        id: string
+    }
+}
