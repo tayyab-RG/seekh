@@ -1,13 +1,20 @@
-import axios from "axios";
+import axios, { AxiosInstance } from "axios";
 import { reqPayload } from "./types";
 
-const api = axios.create({ baseURL: 'http://localhost:5000' });
+let api: AxiosInstance;
+export function setBaseURL(path: string | undefined) {
+
+    if (!path) path = 'http://localhost:5000'
+
+    api = axios.create({ baseURL: path });
+}
 
 export async function generateRequest(reqParams: reqPayload) {
     try {
         const config = {
             headers: {
-                jwt_token: `${reqParams.token}`
+                jwt_token: `${reqParams.token}`,
+                ...reqParams.headers
             }
         }
         switch (reqParams.type) {

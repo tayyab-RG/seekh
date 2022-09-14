@@ -1,6 +1,5 @@
 export interface GetCoursePayload {
     id: string,
-    token: string
 }
 
 export interface GetCourseResponse {
@@ -10,7 +9,6 @@ export interface GetCourseResponse {
 
 export interface CreateCoursePayload {
     name: string,
-    token: string
 }
 
 export interface CreateCourseResponse {
@@ -22,7 +20,6 @@ export interface CreateCourseResponse {
 export interface UpdateCoursePayload {
     id: string,
     name: string,
-    token: string
 }
 
 export interface UpdateCourseResponse {
@@ -38,8 +35,4 @@ export interface CoursesResponse {
             instructor: string
         }
     ]
-}
-
-export interface UserCoursePayload {
-    token: string
 }

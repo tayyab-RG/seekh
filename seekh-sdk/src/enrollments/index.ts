@@ -1,25 +1,31 @@
 import {
     EnrollCoursePayload,
-    RequestsPayload,
     RequestsResponse,
     UpdateEnrollmentPayload,
     EnrollmentsResponse
 } from "./types";
 
 import { generateRequest } from '../transportLayer';
+import { TransportParams } from "../transportLayer/types";
 
 class Enrollment {
+    private trasnsportParams: TransportParams = { token: "" };
+
+    setTransportParams(trasnsportParams: TransportParams) {
+        this.trasnsportParams = trasnsportParams;
+    }
+
     async enrollCourse(enrollParams: EnrollCoursePayload): Promise<String> {
         try {
-            return await generateRequest({ type: 'post', url: `/enroll/${enrollParams.courseId}`, token: enrollParams.token });
+            return await generateRequest({ type: 'post', url: `/enroll/${enrollParams.courseId}`, token: this.trasnsportParams.token, headers: this.trasnsportParams.headers });
         } catch (error) {
             throw error
         }
     }
 
-    async enrollmentRequests(requestsParams: RequestsPayload): Promise<RequestsResponse> {
+    async enrollmentRequests(): Promise<RequestsResponse> {
         try {
-            return await generateRequest({ type: 'get', url: '/requests', token: requestsParams.token });
+            return await generateRequest({ type: 'get', url: '/requests', token: this.trasnsportParams.token, headers: this.trasnsportParams.headers });
         } catch (error) {
             throw error
         }
@@ -27,15 +33,15 @@ class Enrollment {
 
     async updateEnrollment(updateParams: UpdateEnrollmentPayload): Promise<string> {
         try {
-            return await generateRequest({ type: 'post', url: `/${updateParams.request}/${updateParams.courseId}/${updateParams.userId}`, token: updateParams.token });
+            return await generateRequest({ type: 'post', url: `/${updateParams.request}/${updateParams.course}/${updateParams.user}`, token: this.trasnsportParams.token, headers: this.trasnsportParams.headers });
         } catch (error) {
             throw error
         }
     }
 
-    async getEnrollments(enrollmentParams: RequestsPayload): Promise<EnrollmentsResponse> {
+    async getEnrollments(): Promise<EnrollmentsResponse> {
         try {
-            return await generateRequest({ type: 'get', url: '/enrollments', token: enrollmentParams.token });
+            return await generateRequest({ type: 'get', url: '/enrollments', token: this.trasnsportParams.token, headers: this.trasnsportParams.headers });
         } catch (error) {
             throw error
         }

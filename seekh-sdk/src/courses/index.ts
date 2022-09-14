@@ -5,16 +5,28 @@ import {
     CreateCourseResponse,
     UpdateCoursePayload,
     UpdateCourseResponse,
-    CoursesResponse,
-    UserCoursePayload
+    CoursesResponse
 } from "./types";
 
 import { generateRequest } from '../transportLayer';
+import { TransportParams } from "../transportLayer/types";
 
 class Course {
+    private trasnsportParams: TransportParams = { token: "" };
+
+    setTransportParams(trasnsportParams: TransportParams) {
+        this.trasnsportParams = trasnsportParams;
+    }
+
     async createCourse(courseParams: CreateCoursePayload): Promise<CreateCourseResponse> {
         try {
-            return await generateRequest({ type: 'post', url: '/course/create', token: `${courseParams.token}`, body: { name: courseParams.name } });
+            return await generateRequest({
+                type: 'post',
+                url: '/course/create',
+                token: `${this.trasnsportParams.token}`,
+                body: { name: courseParams.name },
+                headers: this.trasnsportParams.headers
+            });
         } catch (error) {
             throw error
         }
@@ -22,7 +34,7 @@ class Course {
 
     async getCourse(courseParams: GetCoursePayload): Promise<GetCourseResponse> {
         try {
-            return await generateRequest({ type: 'get', url: `/course/${courseParams.id}`, token: `${courseParams.token}` });
+            return await generateRequest({ type: 'get', url: `/course/${courseParams.id}`, token: `${this.trasnsportParams.token}`, headers: this.trasnsportParams.headers });
         } catch (error) {
             throw error
         }
@@ -30,7 +42,7 @@ class Course {
 
     async updateCourse(courseParams: UpdateCoursePayload): Promise<UpdateCourseResponse> {
         try {
-            return await generateRequest({ type: 'put', url: `/course/${courseParams.id}`, token: `${courseParams.token}`, body: { name: courseParams.name } });
+            return await generateRequest({ type: 'put', url: `/course/${courseParams.id}`, token: `${this.trasnsportParams.token}`, body: { name: courseParams.name }, headers: this.trasnsportParams.headers });
         } catch (error) {
             throw error
         }
@@ -38,15 +50,15 @@ class Course {
 
     async deleteCourse(courseParams: GetCoursePayload): Promise<string> {
         try {
-            return await generateRequest({ type: 'delete', url: `/course/${courseParams.id}`, token: `${courseParams.token}` })
+            return await generateRequest({ type: 'delete', url: `/course/${courseParams.id}`, token: `${this.trasnsportParams.token}`, headers: this.trasnsportParams.headers })
         } catch (error) {
             throw error
         }
     }
 
-    async getUserCourses(courseParams: UserCoursePayload): Promise<CoursesResponse> {
+    async getUserCourses(): Promise<CoursesResponse> {
         try {
-            return await generateRequest({ type: 'get', url: '/courses', token: `${courseParams.token}` });
+            return await generateRequest({ type: 'get', url: '/courses', token: `${this.trasnsportParams.token}`, headers: this.trasnsportParams.headers });
         } catch (error) {
             throw error
         }

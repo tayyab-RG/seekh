@@ -3,26 +3,16 @@ import Controller from '../controller';
 const controller = new Controller();
 
 async function testUtilities() {
-    let randomUserName = (Math.random() + 1).toString(36).substring(3);
-    let authRes;
-    try {
-        authRes = await controller.Auth().signup({ email: `${randomUserName}@email.com`, password: 'Password@123', name: randomUserName });
-    } catch (error) {
-        authRes = await controller.Auth().login({ email: `${randomUserName}@email.com`, password: 'Password@123' });
-    }
+    const randomUserName = (Math.random() + 1).toString(36).substring(3);
 
+    const authRes = await controller.Auth().signup({ email: `${randomUserName}@email.com`, password: 'Password@123', name: randomUserName });
     const userToken = authRes.token;
 
-    const courseRes = await controller.Course().createCourse({ name: randomUserName, token: userToken });
+    const courseRes = await controller.Course({ token: userToken }).createCourse({ name: randomUserName });
     const courseId = courseRes.courseId;
 
     let otherRandomUserName = (Math.random() + 1).toString(36).substring(3);
-    let otherAuthRes;
-    try {
-        otherAuthRes = await controller.Auth().signup({ email: `${otherRandomUserName}@email.com`, password: 'Password@123', name: otherRandomUserName });
-    } catch (error) {
-        otherAuthRes = await controller.Auth().login({ email: `${otherRandomUserName}@email.com`, password: 'Password@123' });
-    }
+    const otherAuthRes = await controller.Auth().signup({ email: `${otherRandomUserName}@email.com`, password: 'Password@123', name: otherRandomUserName });
     const otherUserToken = otherAuthRes.token;
     const otherUserId = otherAuthRes.data.id;
 
@@ -34,52 +24,66 @@ async function testUtilities() {
     }
 }
 
-describe('enrollment tests', () => {
-    test('enroll course', async () => {
-        const token = (await testUtilities()).userToken;
-        const otherToken = (await testUtilities()).otherUserToken;
-        const courseId = (await testUtilities()).courseId;
+interface authUtilities {
+    userToken: string,
+    courseId: string,
+    otherUserToken: string,
+    otherUserId: string
+}
 
-        const res = await controller.Enrollment().enrollCourse({ courseId: courseId, token: otherToken });
+let testUtils: authUtilities;
+
+describe('enrollment tests', () => {
+    beforeAll(async () => {
+        const res = await testUtilities();
+        testUtils = res;
+
+    });
+
+    test('enroll course', async () => {
+        const otherToken = testUtils.otherUserToken;
+        const courseId = testUtils.courseId;
+
+        const res = await controller.Enrollment({ token: otherToken }).enrollCourse({ courseId: courseId });
         expect(res).toEqual('Enrollment request sent!');
     });
 
     test('enrollment requests', async () => {
-        const token = (await testUtilities()).userToken;
-        const res = await controller.Enrollment().enrollmentRequests({ token: token });
+        const token = testUtils.userToken;
+        const res = await controller.Enrollment({ token: token }).enrollmentRequests();
         expect(res).toHaveProperty('enrollments');
     });
 
     test('enrollment statues', async () => {
-        const token = (await testUtilities()).userToken;
-        const res = await controller.Enrollment().getEnrollments({ token: token });
+        const token = testUtils.userToken;
+        const res = await controller.Enrollment({ token: token }).getEnrollments();
         expect(res).toHaveProperty('enrollments');
     });
 
     test('accept request', async () => {
-        const token = (await testUtilities()).userToken;
-        const courseId = (await testUtilities()).courseId;
-        const otherUserId = (await testUtilities()).otherUserId;
+        const token = testUtils.userToken;
+        const courseId = testUtils.courseId;
+        const otherUserId = testUtils.otherUserId;
 
-        const res = await controller.Enrollment().updateEnrollment({ request: 'accept', courseId: courseId, userId: otherUserId, token: token });
+        const res = await controller.Enrollment({ token: token }).updateEnrollment({ request: 'accept', course: courseId, user: otherUserId });
         expect(res).toEqual('Enrollment request Approved.');
     });
 
     test('reject request', async () => {
-        const token = (await testUtilities()).userToken;
-        const courseId = (await testUtilities()).courseId;
-        const otherUserId = (await testUtilities()).otherUserId;
+        const token = testUtils.userToken;
+        const courseId = testUtils.courseId;
+        const otherUserId = testUtils.otherUserId;
 
-        const res = await controller.Enrollment().updateEnrollment({ request: 'reject', courseId: courseId, userId: otherUserId, token: token });
+        const res = await controller.Enrollment({ token: token }).updateEnrollment({ request: 'reject', course: courseId, user: otherUserId });
         expect(res).toEqual('Enrollment request Rejected.');
     });
 
     test('enroll course: own course', async () => {
-        const token = (await testUtilities()).userToken;
-        const courseId = (await testUtilities()).courseId;
+        const token = testUtils.userToken;
+        const courseId = testUtils.courseId;
 
         expect(async () => {
-            await controller.Enrollment().enrollCourse({ courseId: courseId, token: token });
+            await controller.Enrollment({ token: token }).enrollCourse({ courseId: courseId });
         }).rejects.toThrow();
     });
 });

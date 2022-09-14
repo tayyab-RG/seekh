@@ -1,10 +1,5 @@
 export interface EnrollCoursePayload {
     courseId: string,
-    token: string
-}
-
-export interface RequestsPayload {
-    token: string
 }
 
 export interface RequestsResponse {
@@ -21,9 +16,8 @@ export interface RequestsResponse {
 
 export interface UpdateEnrollmentPayload {
     request: string,
-    userId: string,
-    courseId: string,
-    token: string
+    user: string,
+    course: string,
 }
 
 export interface EnrollmentsResponse {

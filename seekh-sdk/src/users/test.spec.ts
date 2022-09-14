@@ -10,7 +10,7 @@ describe('user tests', () => {
         const userId = authRes.data.id;
         const token = authRes.token;
 
-        const userRes = await controller.User().getUser({ id: userId, token: token });
+        const userRes = await controller.User({ token: authRes.token }).getUser({ id: userId });
         expect(userRes.data).toHaveProperty('id');
         expect(userRes.data).toHaveProperty('name');
         expect(userRes.data).toHaveProperty('email');
@@ -23,13 +23,13 @@ describe('user tests', () => {
         const userId = authRes.data.id;
         const token = authRes.token;
 
-        const userRes = await controller.User().updateUser({ id: userId, token: token, name: 'new name' });
+        const userRes = await controller.User({ token: token }).updateUser({ id: userId, name: 'new name' });
         expect(userRes.data.name).toEqual('new name');
     });
 
     test('random id', async () => {
         expect(async () => {
-            await controller.User().getUser({ id: "random string", token: "random string" });
+            await controller.User({ token: "random string" }).getUser({ id: "random string" });
         })
             .rejects
             .toThrow();
