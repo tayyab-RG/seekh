@@ -1,5 +1,6 @@
 export interface reqPayload {
     type: string,
     url: string,
-    body?: any
+    body?: any,
+    token?: any
 }

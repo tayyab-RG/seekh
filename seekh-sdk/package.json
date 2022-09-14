@@ -1,10 +1,10 @@
 {
   "name": "seekh-sdk",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
-    "test": "jest --coverage",
+    "test": "jest --maxConcurrency=1",
     "dev": "concurrently \"npx tsc --watch\" \"node dist/index.js\""
   },
   "keywords": [],

@@ -7,7 +7,7 @@ export default async (): Promise<Config.InitialOptions> => {
             color: "greenBright",
         },
         verbose: true,
-        testMatch: ["**/**/test.ts"],
+        testMatch: ["**/**/test.spec.ts"],
         testEnvironment: "node",
         detectOpenHandles: true,
         collectCoverage: true,
