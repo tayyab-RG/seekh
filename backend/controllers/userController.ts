@@ -10,11 +10,11 @@ export async function updateUser(req: Request, res: Response, next: NextFunction
     const { name, email, password } = req.body;
 
     // check email format
-    if (!email && !/^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$/.test(email)) return next("Provide Valid email");
+    if (email && !/^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$/.test(email)) return next("Provide Valid email");
 
     // check password requirements
     // Minimum eight and maximum 16 characters, at least one uppercase letter, one lowercase letter, one number and one special character:
-    if (!password && !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,16}$/.test(password)) return next("Password not meet the requirements!");
+    if (password && !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,16}$/.test(password)) return next("Password not meet the requirements!");
 
     try {
         const updatedPerson = await prisma.user.update({
