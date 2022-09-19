@@ -1,8 +1,11 @@
 import Head from 'next/head'
 import Navbar from '../../components/navbar';
 import { seekhsdk } from '../../components/seekh-sdk';
+import { useRouter } from 'next/router';
 
 const Login = () => {
+    const router = useRouter();
+
     const handleSubmit = async (event: any) => {
         event.preventDefault()
         const data = {
@@ -11,9 +14,10 @@ const Login = () => {
         }
         try {
             const res = await seekhsdk.Auth().login({ email: data.email, password: data.password });
-            alert("login successfully!");
-
+            localStorage.setItem('jwt_token', res.token);
+            router.push('/dashboard');
         } catch (error: any) {
+            console.log(error)
             alert(error.msg);
         }
     }
