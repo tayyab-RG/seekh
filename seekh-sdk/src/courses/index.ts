@@ -63,6 +63,14 @@ class Course {
             throw error
         }
     }
+
+    async getAllCourses(): Promise<CoursesResponse> {
+        try {
+            return await generateRequest({ type: 'get', url: '/all-courses' });
+        } catch (error) {
+            throw error
+        }
+    }
 }
 
 export default Course
