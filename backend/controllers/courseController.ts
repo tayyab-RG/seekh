@@ -137,3 +137,23 @@ export async function updateCourse(req: Request, res: Response, next: NextFuncti
         next(error)
     }
 }
+
+export async function getAllCourses(req: Request, res: Response, next: NextFunction) {
+    try {
+        const courses = await prisma.course.findMany({
+            include: {
+                instructor: true,
+            }
+        });
+        const formattedCourses = courses.map((course) => {
+            return {
+                id: course.id,
+                name: course.name,
+                instructor: course.instructor.name
+            };
+        });
+        res.status(200).json({ courses: formattedCourses });
+    } catch (error) {
+        next(error);
+    }
+}
