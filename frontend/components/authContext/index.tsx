@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { authContextType } from "./types";
-import { useCookies } from 'react-cookie';
 
 const authContextDefaultValues: authContextType = {
     user: "",
@@ -14,7 +13,6 @@ export const useAuth = () => useContext(AuthContext)
 
 export const AuthProvider = ({ children }: any) => {
     const [user, setUser] = useState("")
-    const [cookies, setCookie] = useCookies(['user']);
 
     const logout = () => {
         localStorage.removeItem('jwt_token');

@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router';
 import { useAuth } from '../../components/authContext';
 
 interface props {
@@ -10,6 +11,12 @@ const Navbar = (props: props) => {
     const inactivePageClass = "block py-2 pr-4 pl-3 text-lg text-gray-700 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-gray-400 md:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent";
 
     const { user, logout } = useAuth();
+    const router = useRouter();
+
+    const handleLogout = () => {
+        logout();
+        router.push('/');
+    }
 
     return (
         <nav className="px-2 sm:px-4 py-2.5">
@@ -25,19 +32,19 @@ const Navbar = (props: props) => {
                 <div className="hidden w-full md:block md:w-auto" id="navbar-default">
                     <ul className="flex flex-col p-4 mt-4 rounded-lg border md:flex-row md:space-x-8 md:mt-0 md:text-sm md:font-medium md:border-0 ">
                         <li>
-                            <a href="/home" className={active == 'home' ? activePageClass : inactivePageClass} aria-current="page">Home</a>
+                            <a href="/" className={active == 'home' ? activePageClass : inactivePageClass} aria-current="page">Home</a>
                         </li>
                         <li>
-                            <a href="/about" className={active == 'about' ? activePageClass : inactivePageClass}>About</a>
+                            <a href="/courses" className={active == 'courses' ? activePageClass : inactivePageClass}>Courses</a>
                         </li>
-                        <li>
-                            <a href="/contact" className={active == 'contact' ? activePageClass : inactivePageClass}>Contact</a>
+                        <li className={user ? "" : "hidden"}>
+                            <a href="/dashboard" className={active == 'dashboard' ? activePageClass : inactivePageClass}>Dashboard</a>
                         </li>
                         <li className={user ? "hidden " : ""}>
                             <a href="/login" className={active == 'login' ? activePageClass : inactivePageClass}>Login</a>
                         </li>
                         <li className={user ? "" : "hidden "}>
-                            <a href="" onClick={logout} className={active == 'login' ? activePageClass : inactivePageClass}>Logout</a>
+                            <a href="" onClick={handleLogout} className={active == 'login' ? activePageClass : inactivePageClass}>Logout</a>
                         </li>
                     </ul>
                 </div>
