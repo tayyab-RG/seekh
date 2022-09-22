@@ -1,16 +1,12 @@
 import Head from 'next/head'
 import Navbar from '../../components/navbar';
 import { seekhsdk } from '../../components/seekh-sdk';
-import Router, { useRouter } from 'next/router';
+import Router from 'next/router';
 import { useAuth } from '../../components/authContext';
+import { useEffect } from 'react';
 
 const CreateCourse = () => {
-    const router = useRouter();
-    const { user } = useAuth();
-
-    // const redirectUser = (location: string) => {
-    //     router.push(location);
-    // }
+    const { userId, userToken, loading } = useAuth();
 
     const handleSubmit = async (event: any) => {
         event.preventDefault()
@@ -18,23 +14,22 @@ const CreateCourse = () => {
             name: event.target.name.value
         }
         try {
-            const res = await seekhsdk.Course({ token: user }).createCourse({ name: data.name });
-            alert(res.courseName + "Created");
-            router.push('/courses');
+            const res = await seekhsdk.Course({ token: userToken }).createCourse({ name: data.name });
+            alert(res.courseName + " Created");
+            Router.push('/courses');
         } catch (error: any) {
             console.log(error)
             alert(error.msg);
         }
     }
 
-    // const getInitialProps = (pageProps: any) => {
-    //     console.log("-----------------user------------------");
-    //     console.log(user);
-    //     if (user == '') {
-    //         redirectUser('/login');
-    //     }
-    //     return { ...pageProps };
-    // }
+    useEffect(() => {
+        if (!userId) {
+            if (!loading)
+                Router.push('/login');
+            return
+        }
+    });
 
     return (
         <div className='min-h-screen bg-gradient-to-r from-gray-700 via-gray-900 to-black'>
@@ -68,10 +63,5 @@ const CreateCourse = () => {
         </div >
     );
 }
-
-// CreateCourse.getInitialProps = (pageProps: any) => {
-//     Router.push('login')
-//     return { ...pageProps }
-// }
 
 export default CreateCourse;

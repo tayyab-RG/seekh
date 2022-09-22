@@ -9,11 +9,11 @@ const Course = ({ id, title, description, instructor, enroll }: {
     enroll: boolean
 }) => {
 
-    const { user } = useAuth();
+    const { userToken } = useAuth();
 
     const handleEnroll = async (event: any) => {
         try {
-            const res = await seekhsdk.Enrollment({ token: user }).enrollCourse({ courseId: id });
+            const res = await seekhsdk.Enrollment({ token: userToken }).enrollCourse({ courseId: id });
             alert(res);
         } catch (error: any) {
             alert(error.msg);

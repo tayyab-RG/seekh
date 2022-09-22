@@ -3,31 +3,29 @@ import Navbar from '../../components/navbar';
 import { seekhsdk } from '../../components/seekh-sdk';
 import Course from '../../components/course';
 import { useAuth } from '../../components/authContext';
-import { useRouter } from 'next/router';
+import Router from 'next/router';
 
 
 const Courses = ({ allCourses }: any) => {
-    const { user } = useAuth();
-    const enroll = user ? true : false;
-
-    const router = useRouter();
+    const { userId } = useAuth();
+    const enroll = userId ? true : false;
 
     const handleCreate = () => {
-        router.push('/create/course');
+        Router.push('/create/course');
     }
 
     return (
         <div className="min-h-screen bg-gradient-to-r from-gray-700 via-gray-900 to-black">
             <Head>
                 <title>Courses</title>
-                <meta name="description" content="Home Page for Seekh" />
+                <meta name="description" content="Courses" />
                 <link rel="icon" href="/seekh.ico" />
             </Head>
             <Navbar active='courses' />
             <div className='w-full'>
                 <div className='text-3xl text-center my-12'>{allCourses.length ? "All Courses" : "There are no Courses added yet."}</div>
                 <div className='text-center'>
-                    <button className={user ? 'w-1/5 mb-4 mr-4 bg-transparent hover:bg-gray-500 text-gray-700 font-semibold hover:text-white py-2 px-4 border border-gray-700 hover:border-transparent rounded' : 'hidden'} onClick={handleCreate}>Create Course</button>
+                    <button className={userId ? 'w-1/5 mb-4 mr-4 bg-transparent hover:bg-gray-500 text-white font-semibold hover:text-white py-2 px-4 border border-gray-700 hover:border-transparent rounded' : 'hidden'} onClick={handleCreate}>Create Course</button>
                 </div>
                 <div className='flex flex-wrap justify-evenly m-8'>
                     {allCourses.map(function (course: any) {

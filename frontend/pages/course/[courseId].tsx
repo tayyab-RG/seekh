@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '../../components/authContext';
 import Navbar from '../../components/navbar';
 import { seekhsdk } from '../../components/seekh-sdk';
-import Unauthorized from '../../components/unauthorized';
+import Router from 'next/router';
 
 const Course = () => {
     const router = useRouter()
@@ -12,14 +12,20 @@ const Course = () => {
 
     const [course, setCourse] = useState({ courseName: '', instructorName: '' });
 
-    const { user } = useAuth();
+    const { userId, loading, userToken } = useAuth();
 
     useEffect(() => {
-        if (!user) return;
+        if (!courseId) return
+
+        if (!userId) {
+            if (!loading)
+                Router.push('/login');
+            return
+        }
 
         if (typeof (courseId) == 'string') {
             try {
-                seekhsdk.Course({ token: user }).getCourse({ id: courseId })
+                seekhsdk.Course({ token: userToken }).getCourse({ id: courseId })
                     .then((res) => {
                         setCourse(res);
                     })
@@ -28,17 +34,12 @@ const Course = () => {
                     });
             } catch (error) {
                 console.log(error)
-                router.push('./');
+                router.push('/');
             }
         } else
-            router.push('./');
-    }, [user]);
+            router.push('/');
 
-    if (!user) {
-        return (
-            <Unauthorized />
-        )
-    }
+    }, [loading, userId, courseId]);
 
     return (
         <div className="h-fit bg-gradient-to-r from-gray-700 via-gray-900 to-black">
