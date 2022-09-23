@@ -1,5 +1,6 @@
 import { useAuth } from "../authContext"
 import { seekhsdk } from "../seekh-sdk"
+import { toast } from "react-toastify"
 
 const Course = ({ id, title, description, instructor, enroll }: {
     id: string
@@ -14,9 +15,9 @@ const Course = ({ id, title, description, instructor, enroll }: {
     const handleEnroll = async (event: any) => {
         try {
             const res = await seekhsdk.Enrollment({ token: userToken }).enrollCourse({ courseId: id });
-            alert(res);
+            toast(res);
         } catch (error: any) {
-            alert(error.msg);
+            toast.error(error.msg)
         }
 
     }

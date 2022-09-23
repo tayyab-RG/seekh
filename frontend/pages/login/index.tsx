@@ -1,5 +1,6 @@
 import Head from 'next/head'
 import Router from 'next/router';
+import { toast } from 'react-toastify';
 
 import Navbar from '../../components/navbar';
 import { seekhsdk } from '../../components/seekh-sdk';
@@ -18,10 +19,10 @@ const Login = () => {
         try {
             const res = await seekhsdk.Auth().login({ email: data.email, password: data.password });
             login(res.token, res.data.id);
+            toast("Logged In Successfully!");
             Router.push('/dashboard');
         } catch (error: any) {
-            console.log(error)
-            alert(error.msg);
+            toast.error(error.msg)
         }
     }
 

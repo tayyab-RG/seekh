@@ -1,5 +1,6 @@
 import { useAuth } from "../authContext"
 import { seekhsdk } from "../seekh-sdk"
+import { toast } from 'react-toastify'
 
 const Request = ({ name, course, status, courseId, userId }: {
     name: string,
@@ -9,18 +10,18 @@ const Request = ({ name, course, status, courseId, userId }: {
     userId: string
 }) => {
 
-    const { user } = useAuth();
+    const { userToken } = useAuth();
 
     const handleRequest = async (event: any) => {
         try {
-            const res = await seekhsdk.Enrollment({ token: user }).updateEnrollment({
+            const res = await seekhsdk.Enrollment({ token: userToken }).updateEnrollment({
                 request: event.target.value,
                 user: userId,
                 course: courseId
             });
-            alert(res);
+            toast(res);
         } catch (error: any) {
-            alert(error.msg)
+            toast.error(error.msg)
         }
 
     }

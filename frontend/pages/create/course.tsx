@@ -1,9 +1,11 @@
 import Head from 'next/head'
+import { useEffect } from 'react';
+import Router from 'next/router';
+import { toast } from 'react-toastify';
+
 import Navbar from '../../components/navbar';
 import { seekhsdk } from '../../components/seekh-sdk';
-import Router from 'next/router';
 import { useAuth } from '../../components/authContext';
-import { useEffect } from 'react';
 
 const CreateCourse = () => {
     const { userId, userToken, loading } = useAuth();
@@ -15,11 +17,10 @@ const CreateCourse = () => {
         }
         try {
             const res = await seekhsdk.Course({ token: userToken }).createCourse({ name: data.name });
-            alert(res.courseName + " Created");
+            toast(res.courseName + " Created");
             Router.push('/courses');
         } catch (error: any) {
-            console.log(error)
-            alert(error.msg);
+            toast.error(error.msg);
         }
     }
 
