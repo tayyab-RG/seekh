@@ -141,10 +141,23 @@ export async function getEnrollmentsStatus(req: Request, res: Response, next: Ne
                 course: true
             }
         })
+        const courseInstructors = await prisma.course.findMany({
+            where: {
+                id: {
+                    in: userEnrollments.map(enrollment => enrollment.courseId)
+                }
+            },
+            include: {
+                instructor: true
+            }
+        });
         const formattedEnrollments = userEnrollments.map((enrollment) => {
             return {
                 status: enrollment.status,
-                instructor: enrollment.user.name,
+                instructor: courseInstructors.find((course) => {
+                    return (course.id == enrollment.course.id)
+                })?.instructor.name,
+                id: enrollment.course.id,
                 course: enrollment.course.name
             }
         })

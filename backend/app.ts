@@ -2,6 +2,7 @@ import express, { Express, Request, Response } from 'express';
 
 import swaggerUi from 'swagger-ui-express';
 const swaggerDoc = require('./swagger.json');
+const cors = require('cors');
 
 import userRoutes from './routes/userRoutes'
 import authRoutes from './routes/authRoutes'
@@ -16,6 +17,7 @@ app.get('/', (req: Request, res: Response) => {
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
+app.use(cors());
 
 app.use('/', userRoutes);
 app.use('/', authRoutes);

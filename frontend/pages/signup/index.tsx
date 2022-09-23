@@ -1,8 +1,15 @@
 import Head from 'next/head'
+import Router from 'next/router'
+import { toast } from 'react-toastify'
+
+import { useAuth } from '../../components/authContext';
 import Navbar from '../../components/navbar';
 import { seekhsdk } from '../../components/seekh-sdk';
 
 const Signup = () => {
+
+    const { login } = useAuth();
+
     const handleSubmit = async (event: any) => {
         event.preventDefault()
         const data = {
@@ -12,10 +19,11 @@ const Signup = () => {
         }
         try {
             const res = await seekhsdk.Auth().signup({ email: data.email, password: data.password, name: data.name });
-            alert("signup successfully!");
-
+            login(res.token, res.data.id);
+            toast("Signed up Successfully");
+            Router.push('/dashboard');
         } catch (error: any) {
-            alert(error.msg);
+            toast.error(error.msg);
         }
     }
     return (
