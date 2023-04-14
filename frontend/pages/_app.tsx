@@ -1,15 +1,15 @@
 import '../styles/globals.css'
 import type { AppProps } from 'next/app'
 import { AuthProvider } from '../components/authContext';
-import { CookiesProvider } from 'react-cookie';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <CookiesProvider>
-      <AuthProvider>
-        <Component {...pageProps} />
-      </AuthProvider>
-    </CookiesProvider>
+    <AuthProvider>
+      <ToastContainer />
+      <Component {...pageProps} />
+    </AuthProvider>
   );
 }
 

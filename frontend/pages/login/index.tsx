@@ -1,10 +1,14 @@
 import Head from 'next/head'
+import Router from 'next/router';
+import { toast } from 'react-toastify';
+
 import Navbar from '../../components/navbar';
 import { seekhsdk } from '../../components/seekh-sdk';
-import { useRouter } from 'next/router';
+import { useAuth } from '../../components/authContext';
+
 
 const Login = () => {
-    const router = useRouter();
+    const { login } = useAuth();
 
     const handleSubmit = async (event: any) => {
         event.preventDefault()
@@ -14,19 +18,20 @@ const Login = () => {
         }
         try {
             const res = await seekhsdk.Auth().login({ email: data.email, password: data.password });
-            localStorage.setItem('jwt_token', res.token);
-            router.push('/dashboard');
+            login(res.token, res.data.id);
+            toast("Logged In Successfully!");
+            Router.push('/dashboard');
         } catch (error: any) {
-            console.log(error)
-            alert(error.msg);
+            toast.error(error.msg)
         }
     }
+
     return (
         <div className='min-h-screen bg-gradient-to-r from-gray-700 via-gray-900 to-black'>
             <Head>
                 <title>Login</title>
                 <meta name='description' content='Login' />
-                <link rel='icon' href='/favicon.ico' />
+                <link rel='icon' href='/seekh.ico' />
             </Head>
             <Navbar active='login' />
             <div className='container px-6 py-12 h-full mx-auto'>

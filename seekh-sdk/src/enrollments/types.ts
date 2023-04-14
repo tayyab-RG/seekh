@@ -25,7 +25,8 @@ export interface EnrollmentsResponse {
         {
             status: string,
             instructor: string,
-            course: string
+            course: string,
+            id: string
         }
     ]
 }
